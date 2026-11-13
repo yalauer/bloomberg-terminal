@@ -1,0 +1,76 @@
+{
+ "query": "bank",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "Banks—Diversified",
+   "industryDisp": "Banks—Diversified",
+   "isYahooFinance": true,
+   "longname": "Bank of America Corporation",
+   "quoteType": "EQUITY",
+   "score": 48851.0,
+   "sector": "Financial Services",
+   "sectorDisp": "Financial Services",
+   "shortname": "Bank of America Corporation",
+   "symbol": "BAC",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Chicago Mercantile Exchange",
+   "exchange": "CME",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "FUTURE",
+   "score": 30008.0,
+   "shortname": "Micro Bank of America Corp Stoc",
+   "symbol": "XBAC0=F",
+   "typeDisp": "Futures"
+  },
+  {
+   "exchDisp": "Chicago Mercantile Exchange",
+   "exchange": "CME",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "FUTURE",
+   "score": 30008.0,
+   "shortname": "E-mini S&P Regional Banks Selec",
+   "symbol": "SXB=F",
+   "typeDisp": "Futures"
+  },
+  {
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "Banks—Diversified",
+   "industryDisp": "Banks—Diversified",
+   "isYahooFinance": true,
+   "longname": "The Bank of New York Mellon Corporation",
+   "quoteType": "EQUITY",
+   "score": 24016.0,
+   "sector": "Financial Services",
+   "sectorDisp": "Financial Services",
+   "shortname": "The Bank of New York Mellon Cor",
+   "symbol": "BNY",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "industry": "Banks—Diversified",
+   "industryDisp": "Banks—Diversified",
+   "isYahooFinance": true,
+   "longname": "Royal Bank of Canada",
+   "quoteType": "EQUITY",
+   "score": 22078.0,
+   "sector": "Financial Services",
+   "sectorDisp": "Financial Services",
+   "shortname": "ROYAL BANK OF CANADA",
+   "symbol": "RY.TO",
+   "typeDisp": "Equity"
+  }
+ ]
+}

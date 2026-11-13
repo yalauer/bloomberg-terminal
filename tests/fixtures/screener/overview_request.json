@@ -1,0 +1,7 @@
+{
+ "finviz_filters": {
+  "Index": "S&P 500",
+  "Sector": "Technology"
+ },
+ "limit": 40
+}

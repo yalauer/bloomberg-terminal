@@ -1,0 +1,85 @@
+{
+ "query": "AAPL",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NASDAQ",
+   "exchange": "NMS",
+   "index": "quotes",
+   "industry": "Consumer Electronics",
+   "industryDisp": "Consumer Electronics",
+   "isYahooFinance": true,
+   "longname": "Apple Inc.",
+   "quoteType": "EQUITY",
+   "score": 124693000.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "Apple Inc.",
+   "symbol": "AAPL",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NASDAQ",
+   "exchange": "NGM",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "Direxion Daily AAPL Bull 2X Shares",
+   "quoteType": "ETF",
+   "score": 20717.0,
+   "shortname": "Direxion Daily AAPL Bull 2X ETF",
+   "symbol": "AAPU",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "industry": "Consumer Electronics",
+   "industryDisp": "Consumer Electronics",
+   "isYahooFinance": true,
+   "longname": "Apple Inc.",
+   "quoteType": "EQUITY",
+   "score": 20172.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "APPLE CDR (CAD HEDGED)",
+   "symbol": "AAPL.TO",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NYSEArca",
+   "exchange": "PCX",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "YieldMax AAPL Option Income Strategy ETF",
+   "quoteType": "ETF",
+   "score": 20159.0,
+   "shortname": "YieldMax AAPL Option Income Str",
+   "symbol": "APLY",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "BATS Trading",
+   "exchange": "BTS",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "ETF",
+   "score": 20137.0,
+   "shortname": "Roundhill AAPL WeeklyPay ETF",
+   "symbol": "AAPW",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "NASDAQ",
+   "exchange": "NGM",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "Direxion Daily AAPL Bear 1X Shares",
+   "quoteType": "ETF",
+   "score": 20123.0,
+   "shortname": "Direxion Daily AAPL Bear 1X ETF",
+   "symbol": "AAPD",
+   "typeDisp": "ETF"
+  }
+ ]
+}

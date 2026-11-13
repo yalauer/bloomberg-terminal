@@ -1,0 +1,115 @@
+{
+ "last_run": "2026-09-24T16:44:51.400461+00:00",
+ "package_versions": {
+  "finvizfinance": "1.5.0",
+  "pandas": "3.0.5",
+  "pyarrow": "25.0.1",
+  "yfinance": "1.7.0"
+ },
+ "price_period": "5y",
+ "sections": {
+  "earnings": {
+   "content": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "SPY",
+    "JNJ",
+    "XOM",
+    "KO",
+    "PG",
+    "JPM",
+    "WMT",
+    "RKLB",
+    "SAP.DE"
+   ],
+   "fetched_at": "2026-09-24T16:44:51.400444+00:00"
+  },
+  "info": {
+   "content": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "SPY",
+    "JNJ",
+    "XOM",
+    "KO",
+    "PG",
+    "JPM",
+    "WMT"
+   ],
+   "fetched_at": "2026-09-04T06:37:05.318352+00:00"
+  },
+  "prices": {
+   "content": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "SPY",
+    "JNJ",
+    "XOM",
+    "KO",
+    "PG",
+    "JPM",
+    "WMT"
+   ],
+   "fetched_at": "2026-09-04T06:36:00.621183+00:00"
+  },
+  "rates": {
+   "content": [
+    "AUDUSD=X",
+    "CADUSD=X",
+    "CHFUSD=X",
+    "DKKUSD=X",
+    "EURUSD=X",
+    "GBPUSD=X",
+    "HKDUSD=X",
+    "JPYUSD=X",
+    "NOKUSD=X",
+    "SEKUSD=X",
+    "USDAUD=X",
+    "USDCAD=X",
+    "USDCHF=X",
+    "USDDKK=X",
+    "USDEUR=X",
+    "USDGBP=X",
+    "USDHKD=X",
+    "USDJPY=X",
+    "USDNOK=X",
+    "USDSEK=X"
+   ],
+   "fetched_at": "2026-09-24T15:41:51.085822+00:00"
+  },
+  "screener": {
+   "content": true,
+   "fetched_at": "2026-09-04T06:37:15.418065+00:00"
+  },
+  "search": {
+   "content": [
+    "servicenow",
+    "apple",
+    "microsoft",
+    "nvidia",
+    "johnson",
+    "bank",
+    "NOW",
+    "AAPL"
+   ],
+   "fetched_at": "2026-09-20T12:56:25.265423+00:00"
+  },
+  "statements": {
+   "content": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "JNJ",
+    "XOM",
+    "KO",
+    "PG",
+    "JPM",
+    "WMT"
+   ],
+   "fetched_at": "2026-09-04T11:46:27.648416+00:00"
+  }
+ }
+}

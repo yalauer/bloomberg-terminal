@@ -1,0 +1,82 @@
+{
+ "query": "johnson",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "Drug Manufacturers—General",
+   "industryDisp": "Drug Manufacturers—General",
+   "isYahooFinance": true,
+   "longname": "Johnson & Johnson",
+   "quoteType": "EQUITY",
+   "score": 38542.0,
+   "sector": "Healthcare",
+   "sectorDisp": "Healthcare",
+   "shortname": "Johnson & Johnson",
+   "symbol": "JNJ",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "Building Products & Equipment",
+   "industryDisp": "Building Products & Equipment",
+   "isYahooFinance": true,
+   "longname": "Johnson Controls International plc",
+   "quoteType": "EQUITY",
+   "score": 21448.0,
+   "sector": "Industrials",
+   "sectorDisp": "Industrials",
+   "shortname": "Johnson Controls International ",
+   "symbol": "JCI",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NASDAQ",
+   "exchange": "NMS",
+   "index": "quotes",
+   "industry": "Leisure",
+   "industryDisp": "Leisure",
+   "isYahooFinance": true,
+   "longname": "Johnson Outdoors Inc.",
+   "quoteType": "EQUITY",
+   "score": 20097.0,
+   "sector": "Consumer Cyclical",
+   "sectorDisp": "Consumer Cyclical",
+   "shortname": "Johnson Outdoors Inc.",
+   "symbol": "JOUT",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "Johnson & Johnson",
+   "quoteType": "ETF",
+   "score": 20068.0,
+   "shortname": "JOHNSON AND JOHNSON CDR (CAD HE",
+   "symbol": "JNJ.TO",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "London",
+   "exchange": "LSE",
+   "index": "quotes",
+   "industry": "Specialty Chemicals",
+   "industryDisp": "Specialty Chemicals",
+   "isYahooFinance": true,
+   "longname": "Johnson Matthey Plc",
+   "quoteType": "EQUITY",
+   "score": 20068.0,
+   "sector": "Basic Materials",
+   "sectorDisp": "Basic Materials",
+   "shortname": "JOHNSON MATTHEY PLC ORD 147 143",
+   "symbol": "JMAT.L",
+   "typeDisp": "Equity"
+  }
+ ]
+}

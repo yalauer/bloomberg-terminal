@@ -1,0 +1,159 @@
+# CI fuer BT-Lite.
+#
+# Zur Python-Matrix: die Vorgabe nannte 3.11 und 3.13. 3.11 ist hier
+# nicht baubar - `pyproject.toml` fordert `requires-python = ">=3.12,<3.14"`,
+# weil vectorbt 1.1 (Extra `backtest`) numba und damit Python >= 3.12
+# erzwingt. Die Matrix faehrt deshalb 3.12 und 3.13, also die beiden
+# tatsaechlich unterstuetzten Versionen. Eine 3.11-Zeile wuerde schon an
+# der Installation scheitern und nichts pruefen.
+#
+# Zum optionalen Extra: `vectorbt` ist bewusst kein Pflichtpaket. Beide
+# Wege werden gefahren - mit Extra (Job `test`) und ohne (Job
+# `test-ohne-extras`).
+#
+# Beide Wege sind gruen. Ohne das Extra ueberspringen sich die
+# engine-abhaengigen Tests ueber `VectorbtEngine().is_available()`, statt
+# zu scheitern: 1553 bestanden, 62 uebersprungen. Das Produkt verhaelt
+# sich dabei korrekt - die Engine meldet sich als nicht verfuegbar und
+# die Seite BT zeigt ein Fehlerbanner.
+#
+# Netzwerk: die Suite laeuft offline. `tests/conftest.py` blockiert
+# Sockets prozessweit und laesst nur Loopback zu; ein versehentlicher
+# Zugriff nach draussen laesst den Test scheitern.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Ein neuer Push auf denselben Branch bricht den vorigen Lauf ab.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # uv soll das Environment im Projektverzeichnis anlegen, damit der
+  # noxfile es unter .venv findet.
+  UV_PROJECT_ENVIRONMENT: .venv
+  FORCE_COLOR: "1"
+
+jobs:
+  # ---------------------------------------------------------------- lint --
+  # Stil und Typen haengen nicht von der Python-Version ab und laufen
+  # deshalb nur einmal - das spart die Haelfte der Matrix-Laufzeit.
+  lint:
+    name: Lint und Typen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: uv einrichten
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+
+      - name: Python 3.13 bereitstellen
+        run: uv python install 3.13
+
+      - name: Abhaengigkeiten installieren
+        run: |
+          uv venv --python 3.13 .venv
+          uv pip install --python .venv/bin/python -e ".[dev,backtest]"
+
+      - name: ruff check
+        run: .venv/bin/ruff check src tests noxfile.py
+
+      - name: ruff format --check
+        run: .venv/bin/ruff format --check src tests noxfile.py
+
+      - name: mypy (strict)
+        run: .venv/bin/mypy
+
+  # ---------------------------------------------------------------- test --
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: uv einrichten
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+
+      - name: Python ${{ matrix.python-version }} bereitstellen
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Abhaengigkeiten installieren (inklusive Extra backtest)
+        run: |
+          uv venv --python ${{ matrix.python-version }} .venv
+          uv pip install --python .venv/bin/python -e ".[dev,backtest]"
+
+      - name: Suite mit Coverage
+        # Die Schwelle steht auch im noxfile; hier explizit, damit der
+        # Job ohne nox auskommt und der Fehler direkt sichtbar ist.
+        run: |
+          .venv/bin/python -m pytest \
+            --cov \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=80
+
+      - name: Coverage-Report sichern
+        if: matrix.python-version == '3.13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: error
+
+  # ------------------------------------------------- test ohne das Extra --
+  # Der Nachweis, dass das Kernprodukt ohne vectorbt lauffaehig ist.
+  # Die Engine meldet sich ueber is_available() als nicht nutzbar, die
+  # betroffenen Tests ueberspringen sich selbst.
+  test-ohne-extras:
+    name: Tests ohne optionale Extras (Python 3.13)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: uv einrichten
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+
+      - name: Python 3.13 bereitstellen
+        run: uv python install 3.13
+
+      - name: Abhaengigkeiten ohne Extra installieren
+        run: |
+          uv venv --python 3.13 .venv
+          uv pip install --python .venv/bin/python -e ".[dev]"
+
+      - name: vectorbt darf hier nicht installiert sein
+        run: |
+          if .venv/bin/python -c "import vectorbt" 2>/dev/null; then
+            echo "vectorbt ist installiert - dieser Job prueft den Weg ohne das Extra."
+            exit 1
+          fi
+          echo "vectorbt fehlt wie erwartet."
+
+      - name: Suite ohne Coverage-Schwelle
+        # Ohne die Backtest-Engine faellt ein Teil der Zeilen weg; die
+        # Schwelle gilt deshalb im vollstaendigen Job oben.
+        run: .venv/bin/python -m pytest

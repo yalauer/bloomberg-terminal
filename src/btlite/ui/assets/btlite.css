@@ -1,0 +1,1574 @@
+/* ==========================================================================
+   BT-Lite - Terminal-Stylesheet
+   --------------------------------------------------------------------------
+   Dash laedt alles unter ``assets/`` automatisch, nach den externen
+   Stylesheets. Diese Datei liegt deshalb bewusst oberhalb des
+   Darkly-Bootstrap-Themes aus ``ui/app.py`` und ueberschreibt dessen
+   Grundflaechen und Schrift.
+
+   Die Klassennamen sind in ``ui/app.py`` vergeben und hier vollstaendig
+   bedient: bt-root, bt-header, bt-brand, bt-command, bt-notice, bt-main,
+   bt-footer.
+
+   Farbwerte sind mit denen in ``viz/theme.py`` synchron zu halten. Die
+   Richtungsfarben sind bewusst Blau/Orange statt Gruen/Rot - Begruendung
+   und Messwerte stehen im Modul-Docstring von ``viz/theme.py``.
+   ========================================================================== */
+
+:root {
+  --bt-surface: #000000;
+  --bt-surface-raised: #12120f;
+  --bt-surface-hover: #1c1c18;
+
+  --bt-amber: #ffa028;
+  --bt-amber-dim: #b36f16;
+  --bt-cyan: #22d3ee;
+
+  --bt-ink: #e8e6dc;
+  --bt-ink-muted: #898781;
+
+  --bt-grid: #2c2c2a;
+  --bt-axis: #4a4a46;
+
+  /* Richtungsfarben, gemessen farbenblindsicher (siehe viz/theme.py).
+     Helles Gruen gegen dunkles Rot: faellt die Farbwahrnehmung aus,
+     traegt der Helligkeitsunterschied die Unterscheidung weiter. */
+  --bt-up: #00e676;
+  --bt-down: #e03131;
+
+  --bt-critical: #d03b3b;
+  --bt-warning: #fab219;
+
+  --bt-mono: "JetBrains Mono", "Cascadia Mono", "Consolas",
+    "DejaVu Sans Mono", "Courier New", ui-monospace, monospace;
+
+  --bt-fs: 13px;
+  --bt-fs-sm: 11px;
+  --bt-gap: 8px;
+  --bt-header-h: 44px;
+}
+
+/* --------------------------------------------------------------------------
+   Grundlage - schlaegt Darkly
+   -------------------------------------------------------------------------- */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--bt-surface);
+  color: var(--bt-ink);
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs);
+  line-height: 1.4;
+  /* Ziffern in Tabellen und Kursen muessen untereinander stehen. */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Durchgehend Monospace, auch fuer Bootstrap-Komponenten. */
+body,
+button,
+input,
+select,
+textarea,
+.btn,
+.form-control,
+.card,
+.nav-link,
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--bt-mono);
+}
+
+::selection {
+  background: var(--bt-amber);
+  color: #000000;
+}
+
+/* Schmale, terminaltypische Scrollbalken. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bt-axis) var(--bt-surface);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bt-surface);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--bt-axis);
+  border: 2px solid var(--bt-surface);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--bt-amber-dim);
+}
+
+/* --------------------------------------------------------------------------
+   bt-root - Rahmen der Anwendung
+   -------------------------------------------------------------------------- */
+
+.bt-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bt-surface);
+}
+
+/* --------------------------------------------------------------------------
+   bt-header - Kopfzeile mit prominenter Kommandozeile
+   -------------------------------------------------------------------------- */
+
+/* min-height statt height: die Kopfzeile traegt Marke, Kommandozeile und
+   Suchfeld. Bei schmalem Fenster bricht sie um, statt den Inhalt auf
+   44px zusammenzuquetschen - genau das machte das Suchfeld unbenutzbar. */
+.bt-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+  min-height: var(--bt-header-h);
+  padding: 4px 12px;
+  background-color: var(--bt-surface-raised);
+  border-bottom: 1px solid var(--bt-amber-dim);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Das Suchfeld der Namenssuche. Bewusst NICHT .bt-control: das ist die
+   Formularspalte (flex-direction: column) und in einer waagerechten
+   Kopfzeile fehl am Platz. Die Kommandozeile nimmt sich mit flex:1 den
+   Rest, deshalb braucht die Suche eine feste Grundbreite. */
+.bt-search {
+  display: flex;
+  align-items: center;
+  flex: 0 1 260px;
+  min-width: 180px;
+}
+
+.bt-search-input {
+  width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  background-color: var(--bt-surface);
+  color: var(--bt-ink);
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs);
+  border: 1px solid var(--bt-axis);
+  border-radius: 0;
+  outline: none;
+  caret-color: var(--bt-amber);
+}
+
+.bt-search-input::placeholder {
+  color: var(--bt-ink-muted);
+}
+
+.bt-search-input:focus-visible {
+  border-color: var(--bt-amber);
+  box-shadow: 0 0 0 1px var(--bt-amber);
+}
+
+/* Die Trefferliste haengt unter der Kopfzeile und darf den Seiteninhalt
+   nicht verdecken; sie schiebt ihn nach unten. */
+/* Die Trefferliste haengt zwischen Kopfzeile und Navigation, die beide
+   einen eigenen Hintergrund tragen. Ohne eigenen Grund und ohne Abstand
+   nach oben und unten verschwand sie optisch dazwischen - der Nutzer
+   tippte, die Antwort kam, und er sah nichts. */
+.bt-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-gap);
+  padding: 10px 12px;
+  background-color: var(--bt-surface-raised);
+  border-bottom: 2px solid var(--bt-amber);
+  color: var(--bt-ink);
+
+  /* Mit der Kopfzeile mitwandern: das Suchfeld bleibt beim Scrollen
+     stehen, die Trefferliste muss es auch - sonst tippt man oben und
+     die Antwort steht ausserhalb des Sichtbereichs. z-index unter der
+     Kopfzeile, damit die sich beim Scrollen darueberlegt. */
+  position: sticky;
+  top: var(--bt-header-h);
+  z-index: 90;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.bt-search-results:empty {
+  display: none;
+}
+
+/* Trefferliste der Namenssuche. Untereinander statt im Kachelraster: die
+   Zeilen tragen einen vollen Firmennamen, und der bricht in einer 160px
+   breiten Kachel unleserlich um. */
+.bt-hits {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Ein Treffer ist eine ganze Zeile und fuehrt direkt auf den Steckbrief.
+   Deshalb volle Breite und ein sichtbarer Zeigefinger - eine Kachel sah
+   nach Etikett aus, nicht nach Schaltflaeche. */
+.bt-hit {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  background-color: var(--bt-surface);
+  border: 1px solid var(--bt-grid);
+  border-left: 3px solid transparent;
+  color: var(--bt-ink);
+  cursor: pointer;
+}
+
+.bt-hit:hover {
+  background-color: var(--bt-surface-hover);
+  border-left-color: var(--bt-amber);
+}
+
+.bt-hits {
+  gap: 4px;
+}
+
+.bt-hit:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+}
+
+/* Der Firmenname traegt die Zeile: wer "rocket lab" sucht, sucht den
+   Namen und nicht das Kuerzel. */
+.bt-hit-name {
+  display: block;
+  color: var(--bt-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bt-hit-meta {
+  display: block;
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.04em;
+}
+
+/* Eine Trefferzeile besteht aus dem breiten Namensknopf und den beiden
+   schmalen Aktionen daneben. Darunter haengt, zunaechst verborgen, die
+   Depot-Eingabe. */
+.bt-hit-entry {
+  border: 1px solid var(--bt-grid);
+  background-color: var(--bt-surface);
+}
+
+.bt-hit-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* Der Namensknopf nimmt den Raum, die Aktionen bleiben schmal. Seinen
+   eigenen Rahmen verliert er hier: den traegt jetzt die Zeile. */
+.bt-hit-row .bt-hit {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  border-left: 3px solid transparent;
+}
+
+.bt-hit-actions {
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 4px;
+}
+
+/* Die Aktionen sind bewusst zurueckgenommen: das Oeffnen des Steckbriefs
+   ist der Hauptweg, Merken und Kaufen sind Beiwerk. */
+.bt-hit-action {
+  padding: 4px 10px;
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bt-hit-action:hover {
+  background-color: var(--bt-surface-hover);
+  border-color: var(--bt-amber);
+  color: var(--bt-ink);
+}
+
+.bt-hit-action:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+}
+
+/* Die Depot-Eingabe. Stueckzahl und Einstandskurs sind Pflicht, weil das
+   Datenmodell beide groesser null verlangt. */
+.bt-hit-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+  padding: 8px 10px;
+  border-top: 1px solid var(--bt-grid);
+  background-color: var(--bt-surface-raised);
+}
+
+.bt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bt-field-label {
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bt-field-input {
+  width: 110px;
+  height: 26px;
+  padding: 0 8px;
+  background-color: var(--bt-surface);
+  border: 1px solid var(--bt-grid);
+  color: var(--bt-ink);
+  font-family: inherit;
+  font-size: var(--bt-fs-sm);
+}
+
+.bt-field-input:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+}
+
+/* Waehrungsauswahl im Depot-Formular. Das Element traegt ZWEI Klassen:
+   .bt-dropdown bringt Farben und Rahmen, hier steht nur die Breite.
+   Ohne .bt-dropdown bliebe es auf den hellen Dash-Standardfarben - genau
+   der Fehler, der die Oberflaeche anfangs unlesbar machte. */
+.bt-field-select {
+  width: 110px;
+  font-size: var(--bt-fs-sm);
+}
+
+/* Aktionsleiste einer Seite, etwa der Merken-Knopf auf dem Steckbrief. */
+.bt-page-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+  margin: var(--bt-gap) 0;
+}
+
+.bt-brand {
+  color: var(--bt-amber);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  padding-right: 10px;
+  border-right: 1px solid var(--bt-grid);
+  flex: 0 0 auto;
+}
+
+/* Die Kommandozeile ist das zentrale Bedienelement und nimmt daher den
+   verfuegbaren Raum ein. */
+.bt-command {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 28px;
+  padding: 0 10px;
+  background-color: var(--bt-surface);
+  color: var(--bt-amber);
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--bt-axis);
+  border-radius: 0;
+  outline: none;
+  caret-color: var(--bt-amber);
+}
+
+.bt-command::placeholder {
+  color: var(--bt-ink-muted);
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.bt-command:focus {
+  border-color: var(--bt-amber);
+  box-shadow: 0 0 0 1px var(--bt-amber);
+  background-color: #0a0a08;
+}
+
+.bt-notice {
+  flex: 0 0 auto;
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  white-space: nowrap;
+  padding-left: 10px;
+  border-left: 1px solid var(--bt-grid);
+}
+
+/* --------------------------------------------------------------------------
+   bt-main - Inhaltsflaeche, bewusst dicht gesetzt
+   -------------------------------------------------------------------------- */
+
+.bt-main {
+  flex: 1 1 auto;
+  padding: 10px 12px;
+  background-color: var(--bt-surface);
+  min-height: 0;
+}
+
+.bt-main > * + * {
+  margin-top: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   bt-footer - Pflichthinweis
+   -------------------------------------------------------------------------- */
+
+.bt-footer {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  background-color: var(--bt-surface-raised);
+  border-top: 1px solid var(--bt-grid);
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   Hilfsklassen fuer die Seiten aus Phase 3
+   -------------------------------------------------------------------------- */
+
+/* Kachel-Raster fuer Kennzahlen. */
+.bt-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--bt-gap);
+}
+
+.bt-tile {
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+  padding: 6px 8px;
+}
+
+.bt-tile-label {
+  display: block;
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bt-tile-value {
+  display: block;
+  color: var(--bt-ink);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* Richtungsklassen. Farbe allein traegt die Bedeutung nie - die Seiten
+   setzen zusaetzlich ein Vorzeichen oder einen Pfeil in den Text. */
+.bt-up {
+  color: var(--bt-up);
+}
+
+/* Nicht --bt-down: #e03131 erreicht als Schrift nur 3.8:1 auf der
+   Hover-Flaeche der Tabelle (--bt-surface-hover) und faellt damit unter
+   AA. Der hellere Rotton haelt 5.3:1 auch unter der Maus.
+   In Charts bleibt #e03131 richtig - dort ist die Farbe eine Flaeche,
+   kein Text, und der groessere Abstand zum Gruen zaehlt mehr. */
+.bt-down {
+  color: var(--bt-down-text);
+}
+
+/* Fehlende Werte einheitlich zurueckgenommen darstellen. */
+.bt-na {
+  color: var(--bt-ink-muted);
+  font-style: italic;
+}
+
+/* Fehlerbanner fuer BTLiteError.user_message. */
+.bt-error {
+  background-color: rgba(208, 59, 59, 0.12);
+  border: 1px solid var(--bt-critical);
+  border-left-width: 3px;
+  color: var(--bt-ink);
+  padding: 8px 10px;
+}
+
+.bt-warning {
+  background-color: rgba(250, 178, 25, 0.12);
+  border: 1px solid var(--bt-warning);
+  border-left-width: 3px;
+  color: var(--bt-ink);
+  padding: 8px 10px;
+}
+
+/* Dichte Datentabellen im Terminal-Stil. */
+.bt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--bt-fs-sm);
+}
+
+.bt-table th {
+  position: sticky;
+  top: 0;
+  background-color: var(--bt-surface-raised);
+  color: var(--bt-amber);
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--bt-amber-dim);
+  white-space: nowrap;
+}
+
+.bt-table th:first-child,
+.bt-table td:first-child {
+  text-align: left;
+}
+
+.bt-table td {
+  text-align: right;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--bt-grid);
+  white-space: nowrap;
+}
+
+.bt-table tbody tr:hover {
+  background-color: var(--bt-surface-hover);
+}
+
+/* Hervorhebung des betrachteten Tickers im Peer-Vergleich. */
+.bt-table tr.bt-subject td {
+  color: var(--bt-amber);
+  font-weight: 700;
+}
+
+/* Tickerzelle der Screening-Treffer: Ticker plus Links auf Chart,
+   Steckbrief und Finanzanalyse. Die Links tragen eine Unterstreichung,
+   damit sie nicht allein an der Farbe als Link erkennbar sind. Cyan hat
+   auf allen drei Flaechen, auch der Zeilen-Hover-Flaeche, ueber 9:1. */
+.bt-eqs-ticker {
+  display: inline-block;
+  min-width: 6ch;
+  margin-right: 6px;
+  color: var(--bt-ink);
+  font-weight: 700;
+}
+
+.bt-eqs-link {
+  margin-left: 6px;
+  color: var(--bt-cyan);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.bt-eqs-link:hover {
+  color: var(--bt-ink);
+  text-decoration: underline solid;
+}
+
+.bt-eqs-link:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+  color: var(--bt-ink);
+  text-decoration: underline solid;
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap-Angleichung (Darkly)
+   -------------------------------------------------------------------------- */
+
+.card {
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+  border-radius: 0;
+}
+
+.card-header {
+  background-color: var(--bt-surface-raised);
+  border-bottom: 1px solid var(--bt-grid);
+  color: var(--bt-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--bt-fs-sm);
+  padding: 4px 8px;
+}
+
+.btn {
+  border-radius: 0;
+  font-size: var(--bt-fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.btn-primary {
+  background-color: var(--bt-amber-dim);
+  border-color: var(--bt-amber);
+  color: #000000;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--bt-amber);
+  border-color: var(--bt-amber);
+  color: #000000;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid var(--bt-grid);
+}
+
+.nav-tabs .nav-link {
+  border-radius: 0;
+  border: 1px solid transparent;
+  color: var(--bt-ink-muted);
+  text-transform: uppercase;
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--bt-ink);
+  border-color: var(--bt-grid);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: var(--bt-surface-raised);
+  border-color: var(--bt-grid) var(--bt-grid) var(--bt-amber);
+  color: var(--bt-amber);
+}
+
+/* Plotly-Graphen sitzen buendig auf dem Terminalgrund. */
+.js-plotly-plot,
+.plot-container {
+  background-color: var(--bt-surface);
+}
+
+.dash-graph {
+  border: 1px solid var(--bt-grid);
+}
+
+/* Ladeanzeige in Bernstein statt Bootstrap-Blau. */
+._dash-loading,
+.dash-spinner > div {
+  color: var(--bt-amber);
+  border-color: var(--bt-amber) transparent var(--bt-amber) transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Zugaenglichkeit
+   -------------------------------------------------------------------------- */
+
+/* Sichtbarer Fokus bleibt Pflicht - Tastaturbedienung ist im Terminal die
+   Regel, nicht die Ausnahme. */
+:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Im Hochkontrastmodus des Systems die Systemfarben respektieren. */
+@media (forced-colors: active) {
+  .bt-command,
+  .bt-tile,
+  .bt-table th,
+  .bt-table td {
+    border-color: CanvasText;
+  }
+}
+
+/* Schmale Fenster: Kopfzeile umbrechen statt die Kommandozeile zu quetschen. */
+@media (max-width: 720px) {
+  .bt-header {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 6px 8px;
+  }
+
+  .bt-command {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .bt-notice {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* ==========================================================================
+   Phase 3 - Seiten-, Layout- und Bedienelement-Klassen
+   --------------------------------------------------------------------------
+   Die Klassen unterhalb werden in ``ui/pages/`` und ``ui/layouts/`` vergeben,
+   entstanden aber nach der ersten Fassung dieses Stylesheets. Ohne Regel
+   erben sie die Farben des Darkly-Themes bzw. der Dash-Defaults und sind auf
+   dem schwarzen Terminalgrund nicht lesbar.
+
+   Grundsatz: der RUHEZUSTAND ist vollstaendig lesbar. Hover ist nur eine
+   Hervorhebung obendrauf, nie die Bedingung fuer Sichtbarkeit.
+
+   Alle Vordergrund/Hintergrund-Paare sind gegen WCAG AA (4.5:1) gemessen,
+   siehe ``tests/unit/test_ui_styling.py``. Gemessene Werte gegen
+   --bt-surface (#000000):
+     --bt-ink       16.8:1    --bt-amber      10.3:1
+     --bt-cyan      11.6:1    --bt-ink-muted   5.9:1
+     --bt-amber-dim  5.2:1    --bt-up 12.6:1 / --bt-down 4.7:1
+   --bt-down faellt auf --bt-surface-hover auf 3.8:1 und wird als Schrift
+   deshalb durch --bt-down-text ersetzt; als Chartfarbe bleibt es.
+   --bt-amber-dim faellt auf --bt-surface-hover auf 4.2:1 und wird dort
+   deshalb nie als Textfarbe eingesetzt, nur als Rahmen.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Dash-4-Designtokens auf den Terminalgrund umstellen
+   --------------------------------------------------------------------------
+   Dash 4 hat react-select abgeloest. dcc.Dropdown, dcc.RadioItems,
+   dcc.Checklist und dcc.Input rendern eigene Elemente (.dash-dropdown,
+   .dash-radioitems, .dash-checklist, .dash-input-container) und beziehen ihre
+   Farben aus --Dash-*-Variablen. Deren Defaults sind eine HELLE Palette:
+   --Dash-Text-Primary ist rgba(0,18,77,.87), also dunkles Marineblau, und
+   --Dash-Fill-Inverse-Strong ist #fff. Genau das war der gemeldete Fehler -
+   dunkelblaue Beschriftung auf schwarzem Grund, erst beim Hovern erkennbar,
+   weil --Dash-Fill-Primary-Hover die Flaeche aufhellt.
+
+   Die Tokens hier zentral umzudefinieren ist der eigentliche Fix; die
+   Regeln weiter unten sind Feinschliff. */
+
+:root {
+  --Dash-Text-Primary: var(--bt-ink);
+  --Dash-Text-Strong: var(--bt-ink);
+  --Dash-Text-Weak: var(--bt-ink-muted);
+  --Dash-Text-Disabled: var(--bt-ink-muted);
+
+  /* "Inverse-Strong" ist bei Dash die Flaeche der Bedienelemente, im
+     Hell-Default #fff. Im Terminal ist das der abgesetzte Grund. */
+  --Dash-Fill-Inverse-Strong: var(--bt-surface-raised);
+  /* Dash schreibt an einer Stelle (.dash-options-list-option) das Token
+     klein - "Inverse-strong". Das ist ein Tippfehler im Paket und deshalb
+     undefiniert. Wir definieren beide Schreibweisen. */
+  --Dash-Fill-Inverse-strong: var(--bt-surface-raised);
+
+  --Dash-Fill-Interactive-Strong: var(--bt-amber);
+  --Dash-Fill-Interactive-Weak: var(--bt-surface-hover);
+  --Dash-Fill-Primary-Hover: var(--bt-surface-hover);
+  --Dash-Fill-Primary-Active: var(--bt-surface-hover);
+  --Dash-Fill-Disabled: var(--bt-surface-raised);
+
+  --Dash-Stroke-Strong: var(--bt-axis);
+  --Dash-Stroke-Weak: var(--bt-grid);
+
+  --Dash-Shading-Strong: rgba(0, 0, 0, 0.75);
+  --Dash-Shading-Weak: rgba(0, 0, 0, 0.55);
+
+  /* Kritisch als Text: #d03b3b erreicht nur 4.4:1. Fuer Schrift nehmen wir
+     deshalb den helleren Ton (6.5:1 gegen Schwarz, 5.3:1 auf Hover).
+     --bt-down-text ist derselbe Wert: ein aufgehelltes Rot, das die
+     Richtung weiter traegt, ohne unter AA zu fallen. */
+  --bt-down-text: #e66767;
+  --bt-critical-text: #e66767;
+}
+
+/* --------------------------------------------------------------------------
+   Seitenrahmen
+   -------------------------------------------------------------------------- */
+
+.bt-page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--bt-ink);
+}
+
+/* Die Seiten-Varianten teilen den Rahmen; sie existieren als Haken fuer
+   seitenspezifische Feinheiten und setzen die Grundfarbe sicher. */
+.bt-page-gp,
+.bt-page-des,
+.bt-page-fa,
+.bt-page-eqs,
+.bt-page-bt,
+.bt-page-port,
+.bt-page-wl {
+  color: var(--bt-ink);
+}
+
+.bt-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--bt-amber-dim);
+}
+
+.bt-page-title {
+  margin: 0;
+  color: var(--bt-amber);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* bt-page-subtitle traegt zusaetzlich bt-notice; die Farbe wird hier
+   trotzdem gesetzt, damit die Klasse allein lesbar bleibt. */
+.bt-page-subtitle {
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+}
+
+/* Abschnittsrahmen aus components.section(). */
+.bt-section {
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+}
+
+.bt-body {
+  padding: 8px;
+  color: var(--bt-ink);
+  background-color: var(--bt-surface-raised);
+}
+
+/* Seitenspezifische Inhaltscontainer. Layout plus sichere Grundfarbe. */
+.bt-fa-body,
+.bt-eqs-body,
+.bt-port-body,
+.bt-bt-body,
+.bt-charts,
+.bt-risk,
+.bt-trades,
+.bt-statement,
+.bt-ratio-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--bt-ink);
+}
+
+/* Aufklappbare Kennzahlengruppe (html.Details). */
+.bt-ratio-group {
+  border: 1px solid var(--bt-grid);
+  background-color: var(--bt-surface-raised);
+  color: var(--bt-ink);
+  padding: 4px 6px;
+}
+
+/* html.Summary ist fokussierbar und braucht daher einen eigenen Ruhe- und
+   Fokuszustand, nicht nur Hover. */
+.bt-subhead {
+  margin: 0;
+  color: var(--bt-amber);
+  font-size: var(--bt-fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.bt-subhead:hover {
+  color: var(--bt-ink);
+}
+
+.bt-subhead:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+/* Fliesstext, etwa Geschaeftsbeschreibung und Preset-Erlaeuterung. */
+.bt-text {
+  margin: 0;
+  color: var(--bt-ink);
+  max-width: 88ch;
+  line-height: 1.5;
+}
+
+/* Filterzeile im Screener. html.Code darin erbt sonst Bootstrap-Rosa. */
+.bt-filter-line {
+  color: var(--bt-ink);
+  padding: 2px 0;
+}
+
+.bt-filter-line strong {
+  color: var(--bt-ink-muted);
+  font-weight: 700;
+}
+
+.bt-filter-line code,
+.bt-preset code,
+.bt-body code {
+  color: var(--bt-cyan);
+  background: transparent;
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs-sm);
+}
+
+.bt-preset {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--bt-ink);
+}
+
+/* bt-provenance traegt zusaetzlich bt-notice. */
+.bt-provenance {
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+}
+
+/* bt-placeholder traegt zusaetzlich bt-na. */
+.bt-placeholder {
+  color: var(--bt-ink-muted);
+  padding: 10px;
+  border: 1px dashed var(--bt-grid);
+  text-align: center;
+}
+
+/* Fehlermeldung der Kommandozeile. Ruhezustand: leer und ohne Rahmen. */
+.bt-command-error {
+  color: var(--bt-critical-text);
+  font-size: var(--bt-fs-sm);
+  padding: 0 12px;
+}
+
+.bt-command-error:not(:empty) {
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--bt-critical);
+  background-color: rgba(208, 59, 59, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Mnemonic-Navigation
+   -------------------------------------------------------------------------- */
+
+.bt-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  padding: 0 12px;
+  background-color: var(--bt-surface-raised);
+  border-bottom: 1px solid var(--bt-grid);
+}
+
+/* Ruhezustand bewusst voll lesbar (Bernstein, 10.3:1) - vorher erbten die
+   Links das Bootstrap-Blau und waren praktisch unsichtbar. */
+.bt-navlink {
+  display: inline-block;
+  padding: 4px 10px;
+  color: var(--bt-amber);
+  font-size: var(--bt-fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.bt-navlink:hover {
+  color: var(--bt-ink);
+  background-color: var(--bt-surface-hover);
+  border-bottom-color: var(--bt-amber);
+  text-decoration: none;
+}
+
+/* Der Navigationspunkt nennt die Seite im Klartext; das Kuerzel steht
+   klein daneben, weil die Kommandozeile es verlangt. Allein sagte "DES"
+   niemandem, dass dahinter der Steckbrief liegt. */
+.bt-navlink-name {
+  letter-spacing: 0.04em;
+}
+
+.bt-navlink-code {
+  margin-left: 6px;
+  color: var(--bt-ink-muted);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+}
+
+.bt-navlink:hover .bt-navlink-code {
+  color: var(--bt-ink);
+}
+
+.bt-navlink:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+  color: var(--bt-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Bedienelemente - Rahmen
+   -------------------------------------------------------------------------- */
+
+/* Zusatzfilter auf EQS: zweite Steuerzeile unter der Preset-Wahl. Der
+   Hinweistext steht darueber, damit klar ist, dass die Felder erst beim
+   naechsten Lauf wirken. */
+.bt-eqs-refine {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.bt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 8px;
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+}
+
+.bt-control {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 140px;
+  color: var(--bt-ink);
+}
+
+/* Die Beschriftung war einer der unlesbaren Faelle: html.Label erbt unter
+   Darkly eine gedeckte Graublau-Farbe. */
+.bt-control-label {
+  display: block;
+  margin: 0;
+  color: var(--bt-amber);
+  font-size: var(--bt-fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   dcc.RadioItems und dcc.Checklist
+   --------------------------------------------------------------------------
+   Dash rendert je Option ein <label class="dash-options-list-option">, das
+   bei Auswahl zusaetzlich "selected" traegt, darin ein <input> und ein
+   <span class="dash-options-list-option-text">. Die Klasse am Container
+   faerbt diese Kinder NICHT mit - sie muessen einzeln adressiert werden. */
+
+.bt-radio,
+.bt-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+  color: var(--bt-ink);
+}
+
+.bt-radio .dash-options-list-option,
+.bt-checklist .dash-options-list-option,
+.bt-radio label,
+.bt-checklist label {
+  color: var(--bt-ink);
+  background: transparent;
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+}
+
+.bt-radio .dash-options-list-option-text,
+.bt-checklist .dash-options-list-option-text {
+  color: inherit;
+}
+
+/* Ausgewaehlt ist ein eigener, dauerhaft sichtbarer Zustand - nicht Hover. */
+.bt-radio .dash-options-list-option.selected,
+.bt-checklist .dash-options-list-option.selected {
+  color: var(--bt-amber);
+  font-weight: 700;
+  border-color: var(--bt-amber-dim);
+  background-color: var(--bt-surface);
+}
+
+.bt-radio .dash-options-list-option:hover,
+.bt-checklist .dash-options-list-option:hover {
+  color: var(--bt-amber);
+  background-color: var(--bt-surface-hover);
+}
+
+/* Der Fokusring muss sich klar vom Hover unterscheiden: durchgehender
+   Rahmen statt nur Flaechenwechsel. */
+.bt-radio .dash-options-list-option:focus-within,
+.bt-checklist .dash-options-list-option:focus-within {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -1px;
+}
+
+.bt-radio input,
+.bt-checklist input,
+.bt-radio .dash-options-list-option-checkbox,
+.bt-checklist .dash-options-list-option-checkbox {
+  accent-color: var(--bt-amber);
+  border-color: var(--bt-axis);
+  margin-right: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   dcc.Dropdown (Dash 4, kein react-select mehr)
+   --------------------------------------------------------------------------
+   Der Auswahlknopf ist <button class="dash-dropdown bt-dropdown">; unsere
+   Klasse sitzt also auf demselben Element, nicht auf einem Elternknoten.
+   Das Menue haengt per Popover ausserhalb davon im DOM - ".bt-dropdown
+   .dash-dropdown-content" greift dort NICHT. Deshalb wird
+   .dash-dropdown-content global gesetzt. */
+
+.bt-dropdown {
+  background-color: var(--bt-surface);
+  color: var(--bt-ink);
+  border: 1px solid var(--bt-axis);
+  border-radius: 0;
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs-sm);
+  min-height: 28px;
+}
+
+.bt-dropdown .dash-dropdown-value {
+  color: var(--bt-ink);
+}
+
+.bt-dropdown .dash-dropdown-placeholder {
+  color: var(--bt-ink-muted);
+}
+
+.bt-dropdown .dash-dropdown-trigger-icon,
+.bt-dropdown .dash-dropdown-value-count {
+  color: var(--bt-amber);
+  fill: var(--bt-amber);
+}
+
+.bt-dropdown:hover {
+  border-color: var(--bt-amber-dim);
+  background-color: var(--bt-surface-hover);
+}
+
+/* Dash setzt auf .dash-dropdown ein "outline: none" und ersetzt es nur bei
+   :focus. Wir ergaenzen den sichtbaren, vom Hover unterscheidbaren Ring. */
+.bt-dropdown:focus-visible,
+.dash-dropdown:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+  border-color: var(--bt-amber);
+}
+
+/* Das Popover-Menue. Global, weil es ausserhalb von .bt-dropdown haengt. */
+.dash-dropdown-content {
+  background-color: var(--bt-surface-raised);
+  color: var(--bt-ink);
+  border: 1px solid var(--bt-amber-dim);
+  border-radius: 0;
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs-sm);
+}
+
+.dash-dropdown-options {
+  background-color: var(--bt-surface-raised);
+}
+
+.dash-dropdown-option {
+  color: var(--bt-ink);
+  background-color: var(--bt-surface-raised);
+}
+
+.dash-dropdown-option.selected {
+  color: var(--bt-amber);
+  font-weight: 700;
+}
+
+.dash-dropdown-option:hover,
+.dash-dropdown-option:focus-within {
+  background-color: var(--bt-surface-hover);
+  color: var(--bt-amber);
+}
+
+/* Suchfeld im Menue. */
+.dash-dropdown-search-container {
+  background-color: var(--bt-surface);
+  border: 1px solid var(--bt-axis);
+  border-radius: 0;
+}
+
+.dash-dropdown-search {
+  color: var(--bt-ink);
+  background: transparent;
+  font-family: var(--bt-mono);
+}
+
+.dash-dropdown-search::placeholder {
+  color: var(--bt-ink-muted);
+  opacity: 1;
+}
+
+.dash-dropdown-search:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+.dash-dropdown-search-icon,
+.dash-dropdown-clear {
+  color: var(--bt-amber);
+}
+
+.dash-dropdown-clear:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+.dash-dropdown-action-button {
+  color: var(--bt-amber);
+  background: transparent;
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs-sm);
+}
+
+/* --------------------------------------------------------------------------
+   dcc.Input
+   --------------------------------------------------------------------------
+   Unsere Klasse landet auf <div class="dash-input-container bt-input">, das
+   eigentliche Feld ist das innere .dash-input-element. */
+
+.bt-input {
+  background-color: var(--bt-surface);
+  color: var(--bt-ink);
+  border: 1px solid var(--bt-axis);
+  border-radius: 0;
+  height: 28px;
+  min-width: 220px;
+}
+
+.bt-input .dash-input-element,
+.bt-input input {
+  color: var(--bt-ink);
+  background: transparent;
+  font-family: var(--bt-mono);
+  font-size: var(--bt-fs-sm);
+}
+
+.bt-input input::placeholder {
+  color: var(--bt-ink-muted);
+  opacity: 1;
+}
+
+.bt-input:focus-within {
+  border-color: var(--bt-amber);
+}
+
+/* Dash blendet den Ring am inneren input aus und setzt ihn am Container nur
+   ueber :has(). Explizit nachziehen, damit Tastaturfokus sicher sichtbar
+   ist. */
+.bt-input:has(:focus-visible) {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+/* Die Kommandozeile setzt bewusst outline:none, ersetzt den Ring aber durch
+   box-shadow. Fuer Tastaturfokus zusaetzlich einen echten Ring. */
+.bt-command:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   Restliche Bootstrap-Angleichung
+   -------------------------------------------------------------------------- */
+
+/* Darkly faerbt <code> rosa auf hellem Grund. */
+code,
+kbd {
+  color: var(--bt-cyan);
+  background: transparent;
+}
+
+.bt-trades .bt-table td,
+.bt-risk .bt-table td {
+  color: var(--bt-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Seite WL: Verwaltung von Depot, Positionen und Watchlist
+   --------------------------------------------------------------------------
+   Eine Zeile je KAUF, nicht je Titel: der Store adressiert eine Haltung
+   ueber ihren Index, zwei Kaeufe desselben Symbols sind zwei Zeilen. Die
+   Bewertungstabelle darueber fasst dieselben Kaeufe zusammen - beide
+   Darstellungen stehen bewusst nebeneinander.
+
+   Zu den Farben: jede :hover-Regel hier setzt nur Eigenschaften, die
+   dieselbe Regel auch im Ruhezustand setzt. Bedeutung haengt nie an der
+   Farbe allein - der Loeschknopf traegt zusaetzlich seinen eigenen Text
+   und ein title-Attribut. */
+
+/* Namensfeld plus Anlegen/Loeschen neben dem Auswahl-Dropdown. */
+.bt-manage {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+}
+
+.bt-manage-action {
+  height: 26px;
+  padding: 0 12px;
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+  color: var(--bt-ink);
+  font-family: inherit;
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bt-manage-action:hover {
+  background-color: var(--bt-surface-hover);
+  border-color: var(--bt-amber);
+  color: var(--bt-ink);
+}
+
+.bt-manage-action:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+}
+
+/* Der zerstoerende Knopf hebt sich durch seinen Rahmen ab. Die Farbe ist
+   Beiwerk: der Text "Remove"/"Delete" und der Tooltip sagen dasselbe,
+   damit die Warnung auch ohne Farbwahrnehmung ankommt. */
+.bt-manage-danger {
+  color: var(--bt-ink);
+  border: 1px solid var(--bt-critical);
+}
+
+.bt-manage-danger:hover {
+  background-color: var(--bt-surface-hover);
+  color: var(--bt-ink);
+  border: 1px solid var(--bt-critical);
+}
+
+/* Rueckmeldung nach dem Anlegen, Speichern oder Loeschen. Leer, solange
+   nichts passiert ist - eine Dauermeldung wuerde man nicht mehr lesen. */
+.bt-feedback {
+  min-height: 16px;
+  margin: 4px 0;
+  color: var(--bt-ink);
+  font-size: var(--bt-fs-sm);
+}
+
+.bt-feedback:empty {
+  margin: 0;
+  min-height: 0;
+}
+
+/* Breites Textfeld fuer Namen und Notizen: 110px reichen dort nicht. */
+.bt-field-wide {
+  width: 220px;
+}
+
+.bt-holdings-section {
+  margin-top: var(--bt-gap);
+}
+
+/* Anlege-Formular oberhalb der Zeilen, optisch vom Bestand abgesetzt. */
+.bt-holdings-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+  padding: 8px 10px;
+  margin-bottom: var(--bt-gap);
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+}
+
+.bt-holdings {
+  display: flex;
+  flex-direction: column;
+}
+
+.bt-holdings-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--bt-gap);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bt-grid);
+  color: var(--bt-ink);
+}
+
+.bt-holdings-row:hover {
+  background-color: var(--bt-surface-hover);
+  color: var(--bt-ink);
+}
+
+/* Die Kopfzeile beschriftet die Spalten. Auf schmalen Fenstern bricht die
+   Zeile um, deshalb tragen die Felder zusaetzlich eigene Labels. */
+.bt-holdings-head {
+  color: var(--bt-ink-muted);
+  font-size: var(--bt-fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bt-holdings-head:hover {
+  background-color: transparent;
+  color: var(--bt-ink-muted);
+}
+
+.bt-holdings-head-cell {
+  min-width: 110px;
+  color: var(--bt-ink-muted);
+}
+
+.bt-holdings-cell {
+  min-width: 110px;
+  padding-bottom: 4px;
+  color: var(--bt-ink);
+  font-size: var(--bt-fs-sm);
+}
+
+/* Ticker und Waehrung sind Text, kein Feld: update_holding kann beides
+   nicht aendern. Ein Eingabefeld waere ein Versprechen, das der Store
+   nicht einloest. */
+.bt-holdings-ticker {
+  color: var(--bt-amber);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.bt-holdings-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Sortierbare Tabellenkoepfe
+   --------------------------------------------------------------------------
+   Die Ueberschrift wird ein <button> im <th>: ein Klickziel, das auch per
+   Tastatur erreichbar ist. Ein <th> mit onclick waere fuer Screenreader
+   stumm.
+
+   Die Richtung traegt ein Pfeil, nicht nur die Farbe - dieselbe Regel wie
+   bei steigend und fallend. Jede :hover-Regel hier setzt nur
+   Eigenschaften, die dieselbe Regel auch im Ruhezustand setzt. */
+
+.bt-th-sortable {
+  padding: 0;
+}
+
+.bt-sort-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  padding: 4px 8px;
+  background-color: transparent;
+  border: 0;
+  color: var(--bt-amber);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Die erste Spalte ist links ausgerichtet, ihr Kopf folgt dem. */
+.bt-table th:first-child .bt-sort-header {
+  justify-content: flex-start;
+}
+
+.bt-sort-header:hover {
+  background-color: var(--bt-surface-hover);
+  color: var(--bt-amber);
+}
+
+.bt-sort-header:focus-visible {
+  outline: 2px solid var(--bt-amber);
+  outline-offset: -2px;
+}
+
+/* Die aktive Spalte hebt sich ab - zusaetzlich zum Pfeil, nicht statt ihm. */
+.bt-sort-active {
+  background-color: var(--bt-surface-hover);
+  color: var(--bt-amber);
+}
+
+.bt-sort-arrow {
+  color: var(--bt-amber);
+  font-size: 0.9em;
+}
+
+/* --------------------------------------------------------------------------
+   Fortschritt eines laufenden Screenings
+   --------------------------------------------------------------------------
+   Die Zahl traegt die Aussage, der Balken ist Beiwerk - deshalb steht der
+   Text oben und das Balken-Div auf role="presentation". Ein Screening ueber
+   den S&P 500 dauert gemessen fast eine halbe Stunde; ohne diese Anzeige
+   sah der Nutzer nur einen Ladebalken und hielt die Seite fuer
+   haengengeblieben.
+
+   Keine :hover-Regel hier: an einer Anzeige gibt es nichts zu klicken. */
+
+.bt-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background-color: var(--bt-surface-raised);
+  border: 1px solid var(--bt-grid);
+  color: var(--bt-ink);
+}
+
+.bt-progress-text {
+  color: var(--bt-ink);
+  font-size: var(--bt-fs-sm);
+  letter-spacing: 0.03em;
+}
+
+.bt-progress-track {
+  height: 6px;
+  background-color: var(--bt-surface);
+  border: 1px solid var(--bt-grid);
+  overflow: hidden;
+}
+
+/* Die Fuellung waechst ueber die Breite; der Wert kommt als Inline-Style
+   aus progress_view, weil er sich mit jedem Tick aendert. */
+.bt-progress-fill {
+  height: 100%;
+  background-color: var(--bt-amber);
+  transition: width 0.4s linear;
+}

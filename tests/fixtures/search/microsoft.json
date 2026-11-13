@@ -1,0 +1,82 @@
+{
+ "query": "microsoft",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NASDAQ",
+   "exchange": "NMS",
+   "index": "quotes",
+   "industry": "Software—Infrastructure",
+   "industryDisp": "Software—Infrastructure",
+   "isYahooFinance": true,
+   "longname": "Microsoft Corporation",
+   "quoteType": "EQUITY",
+   "score": 147839.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "Microsoft Corporation",
+   "symbol": "MSFT",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Chicago Mercantile Exchange",
+   "exchange": "CME",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "Microsoft Corp Single Stock futures",
+   "quoteType": "FUTURE",
+   "score": 30024.0,
+   "shortname": "Microsoft Corp Stock Futures,Se",
+   "symbol": "SMSFT=F",
+   "typeDisp": "Futures"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "industry": "Software—Infrastructure",
+   "industryDisp": "Software—Infrastructure",
+   "isYahooFinance": true,
+   "longname": "Microsoft Corporation",
+   "quoteType": "EQUITY",
+   "score": 20187.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "MICROSOFT CDR (CAD HEDGED)",
+   "symbol": "MSFT.TO",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "XETRA",
+   "exchange": "GER",
+   "index": "quotes",
+   "industry": "Software—Infrastructure",
+   "industryDisp": "Software—Infrastructure",
+   "isYahooFinance": true,
+   "longname": "Microsoft Corporation",
+   "quoteType": "EQUITY",
+   "score": 20096.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "MICROSOFT CORP.               R",
+   "symbol": "MSF.DE",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NEO",
+   "exchange": "NEO",
+   "index": "quotes",
+   "industry": "Software—Infrastructure",
+   "industryDisp": "Software—Infrastructure",
+   "isYahooFinance": true,
+   "longname": "Microsoft Corporation",
+   "quoteType": "EQUITY",
+   "score": 20058.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "MICROSOFT CDR (CAD HEDGED)",
+   "symbol": "MSFT.NE",
+   "typeDisp": "Equity"
+  }
+ ]
+}

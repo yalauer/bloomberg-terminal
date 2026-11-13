@@ -1,0 +1,68 @@
+{
+ "query": "NOW",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "Software—Application",
+   "industryDisp": "Software—Application",
+   "isYahooFinance": true,
+   "longname": "ServiceNow, Inc.",
+   "quoteType": "EQUITY",
+   "score": 27884500.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "ServiceNow, Inc.",
+   "symbol": "NOW",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "NASDAQ",
+   "exchange": "NGM",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "ETF",
+   "score": 20625.0,
+   "shortname": "GraniteShares 2x Long NOW Daily",
+   "symbol": "NOWL",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "ServiceNow, Inc.",
+   "quoteType": "ETF",
+   "score": 20034.0,
+   "shortname": "SERVICENOW CDR (CAD HEDGED)",
+   "symbol": "NOWS.TO",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "BATS Trading",
+   "exchange": "BTS",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "ETF",
+   "score": 20017.0,
+   "shortname": "Corgi Buy Now Pay Later ETF",
+   "symbol": "LATR",
+   "typeDisp": "ETF"
+  },
+  {
+   "exchDisp": "São Paulo",
+   "exchange": "SAO",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "IT NOW IDIV FUNDO DE ÍNDICE RESPONSABILIDADE LIMITADA",
+   "quoteType": "EQUITY",
+   "score": 20016.0,
+   "shortname": "IT NOW IDIV CI",
+   "symbol": "DIVO11.SA",
+   "typeDisp": "Equity"
+  }
+ ]
+}

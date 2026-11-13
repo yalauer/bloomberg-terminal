@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Umgebung
+.venv/
+.env
+
+# Caches
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Nutzerbestand
+# Depots und Watchlists gehoeren dem Nutzer, nicht dem Projekt.
+/data/
+
+# Lokale Setup-Werkzeuge und generierte Testdaten
+.bootstrap/
+.python/
+.uv-cache/
+.hypothesis/
+.env.*
+!.env.example

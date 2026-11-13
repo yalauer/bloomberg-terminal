@@ -1,0 +1,77 @@
+{
+ "query": "apple",
+ "quotes": [
+  {
+   "dispSecIndFlag": true,
+   "exchDisp": "NASDAQ",
+   "exchange": "NMS",
+   "index": "quotes",
+   "industry": "Consumer Electronics",
+   "industryDisp": "Consumer Electronics",
+   "isYahooFinance": true,
+   "longname": "Apple Inc.",
+   "quoteType": "EQUITY",
+   "score": 249386.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "Apple Inc.",
+   "symbol": "AAPL",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Chicago Mercantile Exchange",
+   "exchange": "CME",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "longname": "Apple Inc Single Stock futures",
+   "quoteType": "FUTURE",
+   "score": 30082.0,
+   "shortname": "Apple Inc Stock Futures,Sep-202",
+   "symbol": "SAAPL=F",
+   "typeDisp": "Futures"
+  },
+  {
+   "exchDisp": "Chicago Mercantile Exchange",
+   "exchange": "CME",
+   "index": "quotes",
+   "isYahooFinance": true,
+   "quoteType": "FUTURE",
+   "score": 30007.0,
+   "shortname": "Micro Apple Inc Stock Futures,S",
+   "symbol": "XAAPL=F",
+   "typeDisp": "Futures"
+  },
+  {
+   "exchDisp": "NYSE",
+   "exchange": "NYQ",
+   "index": "quotes",
+   "industry": "REIT—Hotel & Motel",
+   "industryDisp": "REIT—Hotel & Motel",
+   "isYahooFinance": true,
+   "longname": "Apple Hospitality REIT, Inc.",
+   "quoteType": "EQUITY",
+   "score": 20685.0,
+   "sector": "Real Estate",
+   "sectorDisp": "Real Estate",
+   "shortname": "Apple Hospitality REIT, Inc.",
+   "symbol": "APLE",
+   "typeDisp": "Equity"
+  },
+  {
+   "exchDisp": "Toronto",
+   "exchange": "TOR",
+   "index": "quotes",
+   "industry": "Consumer Electronics",
+   "industryDisp": "Consumer Electronics",
+   "isYahooFinance": true,
+   "longname": "Apple Inc.",
+   "quoteType": "EQUITY",
+   "score": 20172.0,
+   "sector": "Technology",
+   "sectorDisp": "Technology",
+   "shortname": "APPLE CDR (CAD HEDGED)",
+   "symbol": "AAPL.TO",
+   "typeDisp": "Equity"
+  }
+ ]
+}
