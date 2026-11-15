@@ -35,6 +35,7 @@ class Instrument(BTModel):
     """
 
     ticker: Ticker = Field(description="Kanonisches Symbol, zum Beispiel AAPL.")
+    isin: str | None = Field(default=None, description="Validierte ISIN, sofern verfuegbar.")
     name: str | None = Field(default=None, description="Vollstaendiger Name des Emittenten.")
     asset_class: AssetClass = Field(default=AssetClass.EQUITY, description="Instrumentenklasse.")
     currency: Currency = Field(default=Currency.USD, description="Handelswaehrung.")

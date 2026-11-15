@@ -417,3 +417,52 @@ keine steuerliche Bemessungsgrundlage.
   rueckwirkend, ohne das anzukuendigen.
 - Keine Delisting-bereinigten Universen. Screening-Ergebnisse unterliegen einem
   Survivorship Bias, Backtests auf selbst zusammengestellten Universen ebenso.
+
+## Portfolio look-through
+
+Die PORT-Zusammensetzung bevorzugt die iShares-Produktliste und deren
+`holdings.all`-Datenschnittstelle. Ein ETF wird über eine eindeutige ISIN
+oder über Fondsnamen plus verifizierte Börsen- und Tickerzuordnung identifiziert.
+Die Antwort enthält ISIN, Anlageklasse, Land, Sektor, Gewicht und das
+Bestandsdatum. Die Produktliste wird sieben Tage, die Bestände einen Tag
+lokal gecacht. Der originale Abrufzeitpunkt bleibt erhalten.
+
+Optional kann `BTLITE_DATA_EODHD_API_TOKEN` gesetzt werden. Der EODHD-Adapter
+ruft `ETF_Data.Holdings` ab, wenn kein iShares-Bestand verfügbar ist. Die
+API-Gewichte in Prozent werden in dezimale Fondsanteile umgerechnet. Ein
+fehlender Rest bleibt unbekannt. Ein Bestandsdatum wird von dieser Antwort
+nicht garantiert. Ohne Token wird EODHD nicht kontaktiert.
+
+Als letzter automatischer Rückfall dient `yfinance.Ticker.funds_data.top_holdings`.
+`Holding Percent` wird als dezimaler Anteil am gesamten Fonds übernommen.
+Die Quelle liefert keine garantierte vollständige Bestandsliste und kein
+verlässliches Bestandsdatum. Der Cache behält den ursprünglichen Abrufzeitpunkt
+und nutzt die Stammdaten-TTL. Die UI zeigt diesen als Abrufzeit, nicht Bestandsdatum.
+
+Für direkte Aktienpositionen stammen Land und Sektor aus Instrument-Stammdaten.
+Bei iShares-Beständen ist Land das gemeldete Risikoland (`countryOfRisk`), bei
+Direktaktien der Unternehmenssitz. Regionen sind geografische Gruppen einer expliziten
+Länderliste; nicht zugeordnete Länder bleiben in der Regionenansicht unbekannt.
+ETF-Domizile werden nicht als Anlageexposure verwendet. Verschachtelte Fonds,
+nicht unterstützte Anlageklassen und fehlende Bestände bleiben unaufgeschlüsselt.
+Negative Cash- oder Derivategewichte der iShares-Bestände werden mit Vorzeichen
+dem unbekannten Nettoanteil zugerechnet. Dadurch können bekannte Aktiengewichte
+über 100 Prozent liegen, während die Nettosumme weiterhin 100 Prozent beträgt.
+Top-Positionen werden niemals auf 100 Prozent normalisiert. Sektoranteile werden
+aus den aufgeschlüsselten Aktien abgeleitet, nicht aus Yahoo-Sektoraggregaten,
+deren Bezugsbasis für gemischte Fonds abweichen kann.
+
+Ein optionaler Nutzer-CSV-Import ersetzt ETF-Bestände für die aktuelle Seitenansicht.
+Er unterstützt Aktienbestände mit Prozentgewichten am Gesamtfonds. Doppelte Symbole,
+negative/nicht endliche Gewichte und Summen über 100 Prozent werden abgewiesen.
+Quelle ist `user`, Zeitstempel ist Importzeit; Bestandsdatum und Klassifikationen
+liegen in der Verantwortung des Nutzers. Kein Netzwerkzugriff durch den CSV-Parser.
+
+Portfolioanteile = umgerechneter aktueller Positionswert / gesamter Depotwert ×
+Bestandsanteil im Fonds. Fehlende Bewertung verhindert die Gesamtanalyse. Beiträge
+gleicher ISINs werden addiert. Falls die ISIN fehlt, wird nur bei eindeutigem
+normalisiertem Firmennamen und gleichem gemeldeten Land zugeordnet, sonst nach Symbol.
+`yfinance.Ticker.isin` ist experimentell und kann `-` liefern; ungültige ISINs
+werden verworfen. Unterschiedliche Aktiengattungen bleiben ohne gemeinsame ISIN
+getrennt. Die Zuordnung behauptet keine Deckungsgleichheit verschiedener
+Derivate oder Indexbeteiligungen.

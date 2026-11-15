@@ -16,6 +16,7 @@ from datetime import date, datetime
 from typing import Protocol, runtime_checkable
 
 from btlite.models.common import Currency, Interval, Period
+from btlite.models.composition import FundComposition
 from btlite.models.fundamentals import StatementBundle
 from btlite.models.market import EarningsDate, Instrument, PriceSeries, Quote, SearchHit
 from btlite.models.screening import (
@@ -24,6 +25,15 @@ from btlite.models.screening import (
     ScreenRequest,
     ScreenResult,
 )
+
+
+@runtime_checkable
+class CompositionProvider(Protocol):
+    """Optional source of partial fund holdings, weights as decimal fractions."""
+
+    def get_composition(self, ticker: str) -> FundComposition:
+        """Fetch reported holdings with provenance, without filling missing weights."""
+        ...
 
 
 @runtime_checkable

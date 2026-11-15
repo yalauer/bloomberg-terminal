@@ -1041,6 +1041,27 @@ def create_app(settings: Settings, state: AppState | None = None) -> Dash:
         path, _, query = href.partition("?")
         return path, f"?{query}" if query else "", f"{','.join(symbols)} PORT"
 
+    @app.callback(
+        Output("composition-result", "children"),
+        Input("composition-run", "n_clicks"),
+        State("composition-portfolio", "value"),
+        State("composition-compare", "value"),
+        State("composition-dimension", "value"),
+        State("composition-upload", "contents"),
+        prevent_initial_call=True,
+    )
+    def _on_composition(
+        clicks: int,
+        name: str | None,
+        compare: str | None,
+        dimension: str,
+        contents: str | None,
+    ) -> Any:
+        """Analyze actual holdings on explicit request, including ETF constituents."""
+        from btlite.ui.pages.composition import render
+
+        return render(app_state, name, compare, dimension, contents)
+
     # ------------------------------------------------------- Seite WL ----
     #
     # Zum Zuschnitt dieser Callbacks: jeder von ihnen wendet **genau eine**

@@ -27,6 +27,45 @@ keine Authentifizierung, kein Cloud-Deployment. Kein Echtzeitfeed und kein Ersat
 kostenpflichtige Datenquelle. Nichts davon ist vergessen worden — es ist bewusst
 ausgeschlossen, siehe [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+## Portfolio-Zusammensetzung und ETF-Vergleich
+
+Auf **PORT** bietet „Portfolio-Zusammensetzung · ETF Look-through“ eine Analyse
+gespeicherter Depots (unter **WL** anlegen), auch mit nur einem ETF. Depot,
+optional ein Vergleichsdepot und Unternehmen, Länder, Regionen oder Branchen
+auswählen, dann **Zusammensetzung analysieren** klicken.
+
+Die Gewichte basieren auf aktuellen Positionswerten in der Depotwährung.
+Die Tabelle zeigt Beiträge einzelner Direktanlagen und ETFs zum Gesamtdepot;
+gemeinsame Wertpapiere machen Überschneidungen sichtbar. Beim
+Depotvergleich werden Unterschiede in Prozentpunkten ausgewiesen.
+
+iShares-ETFs werden automatisch über die vollständigen veröffentlichten
+Bestände des Anbieters aufgelöst. Andere ETFs können optional über EODHD
+analysiert werden: `BTLITE_DATA_EODHD_API_TOKEN` in der lokalen Umgebung
+setzen (eigener API-Schlüssel erforderlich). Ohne passende Quelle fällt die
+Analyse sichtbar auf Yahoo-Top-Positionen zurück. Fehlende Anteile bleiben
+„Nicht aufgeschlüsselt“ und werden nicht hochgerechnet. Eigene vollständige
+ETF-Aktienbestände können als UTF-8-CSV importiert werden (Komma als
+Trennzeichen, Dezimalpunkt):
+
+```csv
+fund,ticker,isin,name,weight_percent,country,sector
+SPY,AAPL,US0378331005,Apple Inc.,7.0,United States,Technology
+```
+
+Dies ist nur eine Beispielzeile, kein vollständiger oder aktueller Bestand.
+`weight_percent` ist der Anteil am gesamten ETF: `7.0` bedeutet 7 %. Der Import
+ersetzt für die genannten Fonds alle automatischen Bestände bis zum Verlassen der Seite.
+Die Spalte `isin` ist optional, verbessert aber die Zuordnung verschiedener Listings.
+Länder und Sektoren müssen wie bei Yahoo auf Englisch angegeben sein.
+Keine verschachtelten Fonds importieren; der Import unterstützt Aktienbestände.
+Länder bezeichnen den Unternehmenssitz, nicht Absatzmärkte oder ETF-Domizile.
+Unternehmen werden zuerst anhand der ISIN, danach über eindeutigen Namen plus
+Sitzland und schließlich anhand des Symbols zusammengeführt. Mehrdeutige Namen
+werden nicht automatisch zugeordnet. Ein iShares-Bestandsdatum wird angezeigt;
+Yahoo und EODHD liefern nicht immer ein verlässliches Bestandsdatum.
+Bei fehlenden Kursen oder Wechselkursen wird keine Gesamtgewichtung berechnet.
+
 ## Setup
 
 ### Lokale Einrichtung auf diesem Rechner

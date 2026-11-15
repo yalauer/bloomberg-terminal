@@ -138,6 +138,8 @@ class DataSource(StrEnum):
     """Herkunft eines Datensatzes. Wird im UI sichtbar angezeigt."""
 
     YFINANCE = "yfinance"
+    ISHARES = "ishares"
+    EODHD = "eodhd"
     FINVIZ = "finviz"
     #: Indexbestaende, die keine Finanzquelle fuehrt - der DAX etwa. Eine
     #: eigene Herkunft, weil der Nachweis im UI sichtbar ist: "yfinance"

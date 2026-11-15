@@ -277,6 +277,8 @@ class RateLimiterRegistry:
         self._buckets: dict[str, TokenBucket] = {
             "yfinance": TokenBucket(cfg.yfinance_rps, cfg.yfinance_burst, name="yfinance"),
             "finviz": TokenBucket(cfg.finviz_rps, cfg.finviz_burst, name="finviz"),
+            "ishares": TokenBucket(cfg.ishares_rps, cfg.ishares_burst, name="ishares"),
+            "eodhd": TokenBucket(cfg.eodhd_rps, cfg.eodhd_burst, name="eodhd"),
         }
 
     @property

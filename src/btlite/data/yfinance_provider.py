@@ -62,6 +62,7 @@ from btlite.models.common import (
     Provenance,
     normalize_ticker,
 )
+from btlite.models.composition import FundComposition, valid_isin
 from btlite.models.fundamentals import FinancialStatement, StatementBundle, StatementType
 from btlite.models.market import EarningsDate, Instrument, PriceSeries, Quote, SearchHit
 
@@ -1183,6 +1184,76 @@ class YFinanceProvider:
             return self._retry(_fetch)()
 
         return self._cache.cached_df(key, self._settings.cache.statements_ttl_s, _load)
+
+    def get_composition(self, ticker: str) -> FundComposition:
+        """Fetch Yahoo top holdings, cached with the original retrieval timestamp.
+
+        Weights are fractions of fund assets, not of the reported subset.
+        Yahoo does not supply a guaranteed full holdings list or holdings date.
+        """
+        from btlite.models.composition import Constituent
+
+        symbol = normalize_ticker(ticker)
+        key = cache_key("yf", "composition", symbol)
+        cached = self._cache.get_df(key)
+        if cached is not None and not cached.empty:
+            result = FundComposition.model_validate_json(str(cached.iloc[0, 0]))
+            return result.model_copy(
+                update={"provenance": result.provenance.model_copy(update={"from_cache": True})}
+            )
+
+        def fetch() -> FundComposition:
+            try:
+                frame = self._ticker(symbol).funds_data.top_holdings
+                holdings = [
+                    Constituent(
+                        ticker=str(index),
+                        name=str(row["Name"]),
+                        weight=float(row["Holding Percent"]),
+                    )
+                    for index, row in frame.iterrows()
+                ]
+                return FundComposition(
+                    ticker=symbol,
+                    holdings=holdings,
+                    provenance=self._provenance(
+                        from_cache=False, note="Yahoo Top Holdings; Bestandsdatum unbekannt."
+                    ),
+                )
+            except Exception as exc:
+                raise _map_exception(exc, symbol) from exc
+
+        result = self._retry(fetch)()
+        self._cache.set_df(
+            key,
+            pd.DataFrame({"composition": [result.model_dump_json()]}),
+            self._settings.cache.info_ttl_s,
+        )
+        return result
+
+    def get_isin(self, ticker: str) -> str | None:
+        """Resolve an equity ISIN via yfinance's optional identifier lookup.
+
+        The experimental upstream lookup can return '-'; this is treated as
+        missing. Only validated identifiers are cached and used for matching.
+        """
+        symbol = normalize_ticker(ticker)
+        key = cache_key("yf", "isin", symbol)
+        cached = self._cache.get_df(key)
+        if cached is not None and not cached.empty:
+            return valid_isin(str(cached.iloc[0, 0]))
+
+        def fetch() -> str | None:
+            try:
+                return valid_isin(self._ticker(symbol).isin)
+            except Exception as exc:
+                raise _map_exception(exc, symbol) from exc
+
+        result = self._retry(fetch)()
+        self._cache.set_df(
+            key, pd.DataFrame({"isin": [result or "-"]}), self._settings.cache.info_ttl_s
+        )
+        return result
 
     def _fiscal_year_end_month(self, symbol: str) -> int | None:
         """Ermittelt den Monat des Geschaeftsjahresendes.

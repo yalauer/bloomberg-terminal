@@ -127,6 +127,8 @@ def layout(state: AppState, tickers: list[str], args: tuple[str, ...] = ()) -> h
     Returns:
         Seiteninhalt mit Zielwahl, Gewichten, Frontier und Risiko.
     """
+    from btlite.ui.pages.composition import controls
+
     symbols = tickers if len(tickers) >= 2 else state.default_tickers
     objective = _objective_from_args(args)
 
@@ -138,6 +140,7 @@ def layout(state: AppState, tickers: list[str], args: tuple[str, ...] = ()) -> h
                 f"{fmt.format_percent(state.settings.analytics.risk_free_rate, decimals=2)}",
             ),
             dcc.Store(id=TICKER_STORE, data=symbols),
+            controls(state),
             c.controls(
                 c.labeled(
                     "Saved portfolio",

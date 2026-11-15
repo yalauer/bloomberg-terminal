@@ -54,6 +54,9 @@ class CacheSettings(BaseSettings):
         ge=0,
         description="TTL fuer Financial Statements in Sekunden (Default 24 h).",
     )
+    composition_ttl_s: int = Field(
+        default=24 * 3600, ge=0, description="TTL fuer ETF-Bestaende in Sekunden."
+    )
     screener_ttl_s: int = Field(
         default=1800, ge=0, description="TTL fuer Screener-Ergebnisse in Sekunden."
     )
@@ -115,6 +118,10 @@ class RateLimitSettings(BaseSettings):
         description="Requests pro Sekunde gegen Finviz (bewusst niedrig, Scraping).",
     )
     finviz_burst: int = Field(default=2, ge=1, description="Token-Bucket-Kapazitaet Finviz.")
+    ishares_rps: float = Field(default=1.0, gt=0, description="Requests pro Sekunde an iShares.")
+    ishares_burst: int = Field(default=2, ge=1, description="Token-Bucket-Kapazitaet iShares.")
+    eodhd_rps: float = Field(default=1.0, gt=0, description="Requests pro Sekunde an EODHD.")
+    eodhd_burst: int = Field(default=2, ge=1, description="Token-Bucket-Kapazitaet EODHD.")
     max_retries: int = Field(default=3, ge=0, description="Retry-Versuche bei transienten Fehlern.")
     backoff_base_s: float = Field(
         default=1.0, gt=0, description="Basis des exponentiellen Backoff in Sekunden."
@@ -131,6 +138,8 @@ class DataSettings(BaseSettings):
     """Verhalten der Datenschicht."""
 
     model_config = SettingsConfigDict(env_prefix="BTLITE_DATA_", extra="ignore")
+    eodhd_api_token: str | None = Field(default=None, repr=False,
+        description="Optionaler EODHD-Schluessel fuer ETF-Bestaende ohne Emittentenfeed.")
 
     quote_poll_interval_s: float = Field(
         default=15.0,

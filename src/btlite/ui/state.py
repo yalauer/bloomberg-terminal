@@ -25,15 +25,18 @@ from typing import TYPE_CHECKING, Any, Final
 
 from btlite.config import Settings, get_settings
 from btlite.core.cache import DataFrameCache, cache_key
-from btlite.core.errors import BTLiteError, DataError
+from btlite.core.errors import BTLiteError, DataError, RateLimitError
 from btlite.core.logging import get_logger
 
 # Laufzeit-Import: das Protocol ist runtime_checkable und wird unten
 # fuer isinstance gebraucht, nicht nur als Typannotation.
-from btlite.data.base import SymbolSearch
+from btlite.data.base import CompositionProvider, SymbolSearch
+from btlite.data.eodhd_composition import EodhdCompositionProvider
 from btlite.data.indices import IndexConstituentsProvider
+from btlite.data.ishares_provider import IsharesCompositionProvider
 from btlite.data.rates import YFinanceRateProvider
 from btlite.models.common import INTRADAY_INTERVALS, Interval, Period
+from btlite.models.composition import FundComposition, valid_isin
 from btlite.models.fundamentals import RatioSet, StatementBundle
 from btlite.models.market import EarningsDate, Instrument, PriceSeries, Quote
 from btlite.portfolio.store import HoldingsStore
@@ -155,6 +158,8 @@ class AppState:
         self._ratios = _Lru()
         self._earnings = _Lru()
         self._screen_frames = DataFrameCache(self.settings.cache)
+        self._ishares = IsharesCompositionProvider(self.settings)
+        self._eodhd = EodhdCompositionProvider(self.settings)
 
     # ----------------------------------------------------------- Provider --
     @property
@@ -165,6 +170,47 @@ class AppState:
             Provider fuer Stammdaten, Kurse und Statements.
         """
         return self._provider
+
+    def composition(self, ticker: str, instrument: Instrument) -> FundComposition | None:
+        """Prefer issuer holdings, falling back visibly to partial Yahoo holdings."""
+        warning: str | None = None
+        try:
+            issuer = self._ishares.get_composition(ticker, instrument)
+            if issuer is not None:
+                return issuer
+        except RateLimitError:
+            raise
+        except BTLiteError as exc:
+            warning = f"iShares nicht verfuegbar: {exc.user_message}"
+        eodhd: EodhdCompositionProvider | None = getattr(self, "_eodhd", None)
+        if eodhd is not None:
+            try:
+                licensed = eodhd.get_composition(ticker)
+                if licensed is not None:
+                    return licensed
+            except RateLimitError:
+                raise
+            except BTLiteError as exc:
+                warning = f"{warning or ''} EODHD nicht verfuegbar: {exc.user_message}".strip()
+        if not isinstance(self._provider, CompositionProvider):
+            return None
+        result = self._provider.get_composition(ticker)
+        if warning:
+            return result.model_copy(
+                update={
+                    "provenance": result.provenance.model_copy(
+                        update={"note": f"{result.provenance.note or ''} {warning}".strip()}
+                    )
+                }
+            )
+        return result
+
+    def equity_isin(self, ticker: str) -> str | None:
+        """Resolve a direct equity's ISIN when the active provider supports it."""
+        getter = getattr(self._provider, "get_isin", None)
+        if not callable(getter):
+            return None
+        return valid_isin(getter(ticker))
 
     @property
     def holdings(self) -> HoldingsStore:
